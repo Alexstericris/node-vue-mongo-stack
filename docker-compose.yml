@@ -1,16 +1,31 @@
-version: "3.7"
+version: "3.9"
 
 services:
-  node:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  nodeserver:
     image: "node:12"
     user: "node"
+    ports:
+      - "3000:3000"
     working_dir: /home/node/app
-    container_name: testnodeapp
     environment:
-      - NODE_ENV=production
+      - NODE_ENV:development
     volumes:
-      - ./:/home/node/app
-    expose:
-      - "8081"
+      - ./nodeserver:/home/node/app
     command: "npm start"
                         
+  frontend:
+    image: "node:12"
+    user: "node"
+    working_dir: /home/node/frontend
+    volumes:
+      - ./frontend:/home/node/frontend
+    ports:
+      - "8080:8080"
+    command: "npm run serve"
